@@ -267,6 +267,10 @@ body {
   <div id="screen-tellen" class="screen active">
     <div class="opgave-banner" id="t-opgave">Laden...</div>
     <div class="pie-center"><canvas id="pie-tellen" width="440" height="440"></canvas></div>
+    <div id="t-goed" style="display:none" class="goed-banner">
+      <div class="goed-txt">🎉 Goed gedaan!</div>
+      <button class="next-btn" onclick="nieuweOpgaveTellen()">Volgende opgave →</button>
+    </div>
     <div class="frac-display" id="t-frac-display">
       <div class="frac-side leeg" id="t-eq-links">
         <span class="fn-s" id="t-eq-l-t">0</span>
@@ -285,10 +289,6 @@ body {
         <span class="fn-s" id="t-eq-r-n">1</span>
       </div>
     </div>
-    <div id="t-goed" style="display:none" class="goed-banner">
-      <div class="goed-txt">🎉 Goed gedaan!</div>
-      <button class="next-btn" onclick="nieuweOpgaveTellen()">Volgende opgave →</button>
-    </div>
     <div id="t-knoppen" class="btn-row">
       <button class="pill-btn primary" onclick="nieuweOpgaveTellen()">Nieuwe opgave</button>
     </div>
@@ -300,7 +300,6 @@ body {
     <div class="blokken-grid" id="blokken-grid"></div>
     <div id="r-melding" style="display:none" class="melding"></div>
     <div class="som-row" id="som-row"></div>
-    <div id="onmogelijk-msg" style="display:none" class="melding fout"></div>
     <div class="pie-center"><canvas id="pie-rekenen" width="440" height="440"></canvas></div>
     <div class="frac-display" id="r-frac-display">
       <div class="frac-side leeg" id="r-eq-links">
@@ -328,8 +327,8 @@ body {
 </div>
 
 <script>
-const ALLE_BREUKEN=[{n:1,d:1},{n:1,d:2},{n:1,d:3},{n:1,d:4},{n:1,d:5},{n:1,d:6},{n:1,d:7},{n:1,d:8},{n:1,d:9},{n:1,d:10},{n:1,d:11},{n:1,d:12}];
-const MAX_PER_BREUK={1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,11:11,12:12};
+const ALLE_BREUKEN=[{n:1,d:2},{n:1,d:3},{n:1,d:4},{n:1,d:5},{n:1,d:6},{n:1,d:7},{n:1,d:8},{n:1,d:9},{n:1,d:10},{n:1,d:11},{n:1,d:12}];
+const MAX_PER_BREUK={2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,11:11,12:12};
 const TELLEN_NOEMERS=[2,3,4,6,12];
 const KLEUREN=['#7F77DD','#D85A30','#BA7517','#D4537E','#1D9E75','#378ADD','#993C1D','#0F6E56','#534AB7','#E24B4A','#639922','#185FA5'];
 
@@ -540,17 +539,21 @@ function buildBlokkenGrid(){
   const grid=document.getElementById('blokken-grid');
   grid.innerHTML='';
   const hLcm=huidigeLcm();
+  // Huidige som als decimaal
+  const huidigeSom=rGekozen.reduce((s,b)=>s+b.n/b.d, 0);
   ALLE_BREUKEN.forEach((b,i)=>{
     const count=rGekozen.filter(g=>g.bIdx===i).length;
     const max=MAX_PER_BREUK[b.d]||1;
     const vol=count>=max;
-    const past=b.d===1||lcm(hLcm,b.d)<=12;
-    const uitgeschakeld=vol||(rGekozen.length>0&&!past);
+    const past=lcm(hLcm,b.d)<=12;
+    const overvol=huidigeSom + b.n/b.d > 1 + 1e-9;
+    const uitgeschakeld=vol||(rGekozen.length>0&&!past)||overvol;
     const btn=document.createElement('button');
     btn.className='blok-btn'+(count>0?' selected':'')+(uitgeschakeld?' past-niet':'');
     btn.innerHTML=`<span class="bf">${b.n}</span><div class="bl"></div><span class="bd">${b.d}</span>${count>0?'<span class="count-badge">'+count+'</span>':''}`;
     btn.onclick=()=>{
       if(vol)return;
+      if(overvol)return;
       if(rGekozen.length>0&&!past){
         const m=document.getElementById('r-melding');
         m.className='melding info';m.textContent=uitlegNietCombi(b.d);m.style.display='block';
@@ -584,8 +587,6 @@ function clearRekenen(){
 
 function renderRekenen(){
   buildBlokkenGrid();
-  const omsg=document.getElementById('onmogelijk-msg');
-  omsg.style.display='none';
   document.getElementById('r-hint').textContent=rGekozen.length===0?'Tik een breuk aan om te beginnen.':'Tik in de som om een breuk te verwijderen.';
   const ruwEl=document.getElementById('r-ruw');
   ruwEl.textContent='';
@@ -605,9 +606,7 @@ function renderRekenen(){
   rGekozen.forEach(b=>{gemD=lcm(gemD,b.d);});
   let somN=0;
   rGekozen.forEach(b=>{somN+=b.n*(gemD/b.d);});
-  const onmogelijk=somN>gemD;
-  const clampN=Math.min(somN,gemD);
-  const red=reduceer(clampN,gemD);
+  const red=reduceer(somN,gemD);
 
   const row=document.getElementById('som-row');
   row.innerHTML='';
@@ -625,18 +624,16 @@ function renderRekenen(){
   res.innerHTML=`<span style="font-size:15px;font-weight:500;line-height:1;color:#534AB7">${red.n}</span><div style="width:14px;height:1.5px;background:#534AB7"></div><span style="font-size:15px;font-weight:500;line-height:1;color:#534AB7">${red.d}</span>`;
   row.appendChild(res);
 
-  if(onmogelijk){omsg.style.display='block';omsg.textContent='Meer dan een hele taart! Tik op een breuk in de som om hem te verwijderen.';}
-
   document.getElementById('r-teller').textContent=red.n;
   document.getElementById('r-noemer').textContent=red.d;
   document.getElementById('r-pct').textContent=Math.round(red.n/red.d*1000)/10+'%';
   toonCarousel('r', red.n, red.d);
 
-  if(!onmogelijk&&(red.n!==clampN||red.d!==gemD)){
-    ruwEl.textContent='ook: '+clampN+'/'+gemD;
+  if(red.n!==somN||red.d!==gemD){
+    ruwEl.textContent='ook: '+somN+'/'+gemD;
   }
 
-  drawPieMeerkleurig('pie-rekenen',onmogelijk?[]:rGekozen);
+  drawPieMeerkleurig('pie-rekenen',rGekozen);
 }
 
 // Redraw on resize (orientation change)
