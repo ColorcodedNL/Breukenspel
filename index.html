@@ -10,77 +10,248 @@
 <title>Breukenspel</title>
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body { font-family: system-ui, sans-serif; background: #f5f4ff; }
-.app { max-width: 680px; margin: 0 auto; padding: 14px 16px; }
 
-.tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-.tab { flex:1; padding:10px 8px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; text-align:center; transition:all .15s; }
-.tab.active { background:#7F77DD; border-color:#7F77DD; color:white; }
-.screen { display:none; }
-.screen.active { display:block; }
+html, body {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
 
-.opgave-banner { background:#EEEDFE; border-radius:16px; padding:10px 16px; text-align:center; font-size:17px; font-weight:500; color:#3C3489; margin-bottom:10px; }
-.pie-center { display:flex; justify-content:center; margin-bottom:8px; }
-.frac-display { text-align:center; margin-bottom:8px; }
-.frac-big { display:inline-flex; flex-direction:column; align-items:center; gap:2px; }
-.fn { font-size:40px; font-weight:500; line-height:1; color:#1a1a1a; }
-.fl { width:50px; height:2.5px; background:#1a1a1a; }
-.pct-big { font-size:18px; font-weight:500; color:#7F77DD; margin-top:4px; }
-.ruw-breuk { font-size:13px; color:#AFA9EC; margin-top:3px; }
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f4ff;
+  display: flex;
+  flex-direction: column;
+}
 
-.goed-banner { background:#7F77DD; border-radius:16px; padding:14px; text-align:center; margin-bottom:10px; }
-.goed-txt { font-size:20px; font-weight:500; color:white; margin-bottom:10px; }
-.next-btn { padding:11px 28px; border-radius:24px; border:none; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; }
+/* ── Shell ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 10px 16px;
+  gap: 8px;
+}
 
-.btn-row { display:flex; gap:10px; justify-content:center; margin-top:8px; }
-.pill-btn { padding:11px 22px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; }
-.pill-btn.primary { border-color:#7F77DD; background:#7F77DD; color:white; }
+/* ── Tabs: fixed top ── */
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.tab {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 24px;
+  border: 2px solid #AFA9EC;
+  background: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #534AB7;
+  text-align: center;
+  transition: all .15s;
+}
+.tab.active { background: #7F77DD; border-color: #7F77DD; color: white; }
 
-.blokken-grid { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:10px; }
-.blok-btn { padding:8px 10px; border-radius:20px; border:2px solid #AFA9EC; background:white; font-size:13px; font-weight:500; cursor:pointer; color:#534AB7; transition:all .15s; display:inline-flex; flex-direction:column; align-items:center; gap:1px; min-width:46px; position:relative; }
-.blok-btn.selected { border-color:#7F77DD; background:#7F77DD; color:white; }
-.blok-btn.past-niet { opacity:0.25; cursor:not-allowed; }
-.blok-btn .count-badge { position:absolute; top:-7px; right:-7px; font-size:10px; background:#534AB7; color:white; border-radius:10px; padding:1px 5px; font-weight:500; }
-.bf { font-size:15px; font-weight:500; line-height:1; }
-.bl { width:15px; height:1.5px; background:currentColor; }
-.bd { font-size:15px; font-weight:500; line-height:1; }
+/* ── Screens ── */
+.screen { display: none; flex: 1; flex-direction: column; min-height: 0; gap: 6px; }
+.screen.active { display: flex; }
 
-.som-row { display:flex; align-items:center; gap:5px; justify-content:center; flex-wrap:wrap; min-height:46px; margin-bottom:8px; }
-.som-frac { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:5px 9px; border:2px solid; cursor:pointer; }
-.som-op { font-size:17px; color:#aaa; }
-.som-eq { font-size:17px; color:#aaa; }
-.som-result { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:5px 9px; border:2px solid #ddd; background:#f0eeff; }
+/* ── Tellen screen ── */
+.opgave-banner {
+  background: #EEEDFE;
+  border-radius: 16px;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 500;
+  color: #3C3489;
+  flex-shrink: 0;
+}
 
-.melding { text-align:center; font-size:13px; border-radius:12px; padding:7px 12px; margin-bottom:7px; }
-.melding.info { color:#3C3489; background:#EEEDFE; border:1.5px solid #AFA9EC; }
-.melding.fout { color:#A32D2D; background:#FCEBEB; border:1.5px solid #F09595; }
-.hint { text-align:center; font-size:13px; color:#888; margin-bottom:7px; }
+/* Pie grows to fill space */
+.pie-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+}
+.pie-center canvas {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
 
-#confetti-canvas { position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999; }
+/* ── Breuk carousel ── */
+.frac-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
 
-@media (orientation: landscape) and (max-height: 600px) {
-  .app { padding: 6px 12px; }
-  .tabs { margin-bottom: 6px; }
-  .tab { padding: 7px 8px; font-size: 13px; }
-  .opgave-banner { padding: 6px 12px; font-size: 14px; margin-bottom: 6px; border-radius: 12px; }
-  .blokken-grid { gap: 4px; margin-bottom: 6px; flex-wrap: nowrap; overflow-x: visible; justify-content: center; }
-  .blok-btn { padding: 6px 7px; min-width: 38px; border-radius: 16px; border-width: 1.5px; }
-  .bf, .bd { font-size: 12px; }
-  .bl { width: 12px; }
-  .pie-center canvas { width: 110px !important; height: 110px !important; }
-  .fn { font-size: 28px; }
-  .fl { width: 36px; }
-  .pct-big { font-size: 14px; margin-top: 2px; }
-  .frac-display { margin-bottom: 4px; }
-  .goed-banner { padding: 8px; }
-  .goed-txt { font-size: 16px; margin-bottom: 6px; }
-  .next-btn { padding: 8px 20px; font-size: 13px; }
-  .som-row { min-height: 36px; margin-bottom: 5px; }
-  .hint { margin-bottom: 4px; font-size: 12px; }
-  .btn-row { margin-top: 5px; }
-  .pill-btn { padding: 8px 16px; font-size: 13px; }
-  .ruw-breuk { font-size: 11px; }
+.frac-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.35;
+  min-width: 52px;
+  transition: opacity .2s;
+}
+.frac-side.zichtbaar { opacity: 0.35; }
+.frac-side.leeg { opacity: 0; pointer-events: none; }
+
+.frac-main-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* shared fraction rendering */
+.fn  { font-size: 40px; font-weight: 600; line-height: 1; color: #1a1a1a; }
+.fn-s{ font-size: 22px; font-weight: 500; line-height: 1; color: #1a1a1a; }
+.fl  { width: 50px; height: 2.5px; background: #1a1a1a; }
+.fl-s{ width: 28px; height: 2px;   background: #1a1a1a; }
+
+.pct-big { font-size: 18px; font-weight: 500; color: #7F77DD; margin-top: 2px; }
+.ruw-breuk { font-size: 13px; color: #AFA9EC; margin-top: 2px; }
+
+.goed-banner {
+  background: #7F77DD;
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.goed-txt { font-size: 18px; font-weight: 500; color: white; margin-bottom: 8px; }
+.next-btn {
+  padding: 10px 28px;
+  border-radius: 24px;
+  border: none;
+  background: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #534AB7;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+}
+.pill-btn {
+  padding: 11px 22px;
+  border-radius: 24px;
+  border: 2px solid #AFA9EC;
+  background: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #534AB7;
+}
+.pill-btn.primary { border-color: #7F77DD; background: #7F77DD; color: white; }
+
+/* ── Rekenen screen ── */
+.blokken-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.blok-btn {
+  padding: 8px 10px;
+  border-radius: 20px;
+  border: 2px solid #AFA9EC;
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #534AB7;
+  transition: all .15s;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 46px;
+  position: relative;
+}
+.blok-btn.selected { border-color: #7F77DD; background: #7F77DD; color: white; }
+.blok-btn.past-niet { opacity: 0.25; cursor: not-allowed; }
+.blok-btn .count-badge {
+  position: absolute;
+  top: -7px; right: -7px;
+  font-size: 10px;
+  background: #534AB7;
+  color: white;
+  border-radius: 10px;
+  padding: 1px 5px;
+  font-weight: 500;
+}
+.bf { font-size: 15px; font-weight: 500; line-height: 1; }
+.bl { width: 15px; height: 1.5px; background: currentColor; }
+.bd { font-size: 15px; font-weight: 500; line-height: 1; }
+
+.som-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.som-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  border-radius: 10px;
+  padding: 5px 9px;
+  border: 2px solid;
+  cursor: pointer;
+}
+.som-op { font-size: 17px; color: #aaa; }
+.som-eq { font-size: 17px; color: #aaa; }
+.som-result {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  border-radius: 10px;
+  padding: 5px 9px;
+  border: 2px solid #ddd;
+  background: #f0eeff;
+}
+
+.melding {
+  text-align: center;
+  font-size: 13px;
+  border-radius: 12px;
+  padding: 7px 12px;
+  flex-shrink: 0;
+}
+.melding.info { color: #3C3489; background: #EEEDFE; border: 1.5px solid #AFA9EC; }
+.melding.fout { color: #A32D2D; background: #FCEBEB; border: 1.5px solid #F09595; }
+.hint { text-align: center; font-size: 13px; color: #888; flex-shrink: 0; }
+
+#confetti-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
 }
 </style>
 </head>
@@ -92,16 +263,27 @@ body { font-family: system-ui, sans-serif; background: #f5f4ff; }
     <div class="tab" onclick="switchTab('rekenen')">➕ Rekenen</div>
   </div>
 
+  <!-- TELLEN -->
   <div id="screen-tellen" class="screen active">
     <div class="opgave-banner" id="t-opgave">Laden...</div>
-    <div class="pie-center"><canvas id="pie-tellen" width="220" height="220"></canvas></div>
-    <div class="frac-display">
-      <div class="frac-big">
+    <div class="pie-center"><canvas id="pie-tellen" width="440" height="440"></canvas></div>
+    <div class="frac-display" id="t-frac-display">
+      <div class="frac-side leeg" id="t-eq-links">
+        <span class="fn-s" id="t-eq-l-t">0</span>
+        <div class="fl-s"></div>
+        <span class="fn-s" id="t-eq-l-n">1</span>
+      </div>
+      <div class="frac-main-wrap">
         <span class="fn" id="t-teller">0</span>
         <div class="fl"></div>
         <span class="fn" id="t-noemer">6</span>
+        <div class="pct-big" id="t-pct">0%</div>
       </div>
-      <div class="pct-big" id="t-pct">0%</div>
+      <div class="frac-side leeg" id="t-eq-rechts">
+        <span class="fn-s" id="t-eq-r-t">0</span>
+        <div class="fl-s"></div>
+        <span class="fn-s" id="t-eq-r-n">1</span>
+      </div>
     </div>
     <div id="t-goed" style="display:none" class="goed-banner">
       <div class="goed-txt">🎉 Goed gedaan!</div>
@@ -112,21 +294,32 @@ body { font-family: system-ui, sans-serif; background: #f5f4ff; }
     </div>
   </div>
 
+  <!-- REKENEN -->
   <div id="screen-rekenen" class="screen">
     <div class="hint" id="r-hint">Tik een breuk aan om te beginnen.</div>
     <div class="blokken-grid" id="blokken-grid"></div>
     <div id="r-melding" style="display:none" class="melding"></div>
     <div class="som-row" id="som-row"></div>
     <div id="onmogelijk-msg" style="display:none" class="melding fout"></div>
-    <div class="pie-center"><canvas id="pie-rekenen" width="220" height="220"></canvas></div>
-    <div class="frac-display">
-      <div class="frac-big">
+    <div class="pie-center"><canvas id="pie-rekenen" width="440" height="440"></canvas></div>
+    <div class="frac-display" id="r-frac-display">
+      <div class="frac-side leeg" id="r-eq-links">
+        <span class="fn-s" id="r-eq-l-t">0</span>
+        <div class="fl-s"></div>
+        <span class="fn-s" id="r-eq-l-n">1</span>
+      </div>
+      <div class="frac-main-wrap">
         <span class="fn" id="r-teller">0</span>
         <div class="fl"></div>
         <span class="fn" id="r-noemer">1</span>
+        <div class="pct-big" id="r-pct">0%</div>
+        <div class="ruw-breuk" id="r-ruw"></div>
       </div>
-      <div class="pct-big" id="r-pct">0%</div>
-      <div class="ruw-breuk" id="r-ruw"></div>
+      <div class="frac-side leeg" id="r-eq-rechts">
+        <span class="fn-s" id="r-eq-r-t">0</span>
+        <div class="fl-s"></div>
+        <span class="fn-s" id="r-eq-r-n">1</span>
+      </div>
     </div>
     <div class="btn-row">
       <button class="pill-btn" onclick="clearRekenen()">↺ Wis alles</button>
@@ -147,6 +340,40 @@ let confParticles=[],confRaf=null;
 function gcd(a,b){return b===0?a:gcd(b,a%b);}
 function lcm(a,b){return a*b/gcd(a,b);}
 function reduceer(n,d){const g=gcd(Math.abs(n),Math.abs(d));return{n:n/g,d:d/g};}
+
+function equivalenten(n, d) {
+  // Alle vermenigvuldigingen van n/d die noemer <= 12 hebben, gesorteerd op noemer
+  const result = [];
+  for (let m = 2; m * d <= 12; m++) {
+    result.push({n: n * m, d: d * m});
+  }
+  return result;
+}
+
+function toonCarousel(prefix, n, d) {
+  // n/d is de gereduceerde breuk
+  const eq = equivalenten(n, d);
+  // links: een na laatste, rechts: laatste (of omgekeerd: links=eerste, rechts=tweede)
+  // Toon twee: links eq[0], rechts eq[1] als ze bestaan
+  const links  = document.getElementById(prefix+'-eq-links');
+  const rechts = document.getElementById(prefix+'-eq-rechts');
+
+  if (eq.length >= 1) {
+    document.getElementById(prefix+'-eq-l-t').textContent = eq[0].n;
+    document.getElementById(prefix+'-eq-l-n').textContent = eq[0].d;
+    links.className = 'frac-side zichtbaar';
+  } else {
+    links.className = 'frac-side leeg';
+  }
+
+  if (eq.length >= 2) {
+    document.getElementById(prefix+'-eq-r-t').textContent = eq[1].n;
+    document.getElementById(prefix+'-eq-r-n').textContent = eq[1].d;
+    rechts.className = 'frac-side zichtbaar';
+  } else {
+    rechts.className = 'frac-side leeg';
+  }
+}
 function huidigeLcm(){if(rGekozen.length===0)return 1;let l=rGekozen[0].d;rGekozen.forEach(b=>{l=lcm(l,b.d);});return l;}
 
 function uitlegNietCombi(d){
@@ -162,9 +389,27 @@ function switchTab(t){
   document.getElementById('screen-tellen').classList.toggle('active',t==='tellen');
   document.getElementById('screen-rekenen').classList.toggle('active',t==='rekenen');
   if(t==='rekenen')renderRekenen();
+  else resizePie('pie-tellen');
+}
+
+// ── Responsive canvas sizing ──
+function getPieSize(id) {
+  const container = document.getElementById(id).parentElement;
+  const rect = container.getBoundingClientRect();
+  // Use the smaller of width/height so it stays square within the flex container
+  const size = Math.min(rect.width, rect.height);
+  return Math.max(size, 120);
+}
+
+function resizePie(id) {
+  const canvas = document.getElementById(id);
+  const size = getPieSize(id);
+  canvas.width = size;
+  canvas.height = size;
 }
 
 function drawPieTellen(id,filled,total,clickCb){
+  resizePie(id);
   const canvas=document.getElementById(id);
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
@@ -191,6 +436,7 @@ function drawPieTellen(id,filled,total,clickCb){
 }
 
 function drawPieMeerkleurig(id,breuken){
+  resizePie(id);
   const canvas=document.getElementById(id);
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
@@ -219,19 +465,16 @@ function drawPieMeerkleurig(id,breuken){
 
 function startConfetti(){
   const canvas=document.getElementById('confetti-canvas');
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
   confParticles=[];
   const colors=['#7F77DD','#D85A30','#1D9E75','#FAC775','#D4537E','#378ADD','#AFA9EC','#F4C0D1','#97C459','#E24B4A'];
   for(let i=0;i<160;i++){
     confParticles.push({
-      x:Math.random()*canvas.width,
-      y:-20-Math.random()*canvas.height*0.5,
+      x:Math.random()*canvas.width,y:-20-Math.random()*canvas.height*0.5,
       w:8+Math.random()*8,h:5+Math.random()*5,
       color:colors[Math.floor(Math.random()*colors.length)],
       rot:Math.random()*360,rotV:(Math.random()-0.5)*10,
-      vy:3+Math.random()*5,vx:(Math.random()-0.5)*3,
-      alpha:1
+      vy:3+Math.random()*5,vx:(Math.random()-0.5)*3,alpha:1
     });
   }
   if(confRaf)cancelAnimationFrame(confRaf);
@@ -273,12 +516,19 @@ function updateTellen(){
   document.getElementById('t-teller').textContent=tTeller;
   document.getElementById('t-noemer').textContent=tNoemer;
   document.getElementById('t-pct').textContent=Math.round(tTeller/tNoemer*1000)/10+'%';
+  // Carousel equivalenten
+  if(tTeller > 0) {
+    const red = reduceer(tTeller, tNoemer);
+    toonCarousel('t', red.n, red.d);
+  } else {
+    document.getElementById('t-eq-links').className='frac-side leeg';
+    document.getElementById('t-eq-rechts').className='frac-side leeg';
+  }
   drawPieTellen('pie-tellen',tTeller,tNoemer,tGoed?null:(seg)=>{
     tTeller=(seg<tTeller)?seg:seg+1;
     tTeller=Math.max(0,Math.min(tNoemer,tTeller));
     if(tTeller===tDoel&&!tGoed){
-      tGoed=true;
-      startConfetti();
+      tGoed=true;startConfetti();
       document.getElementById('t-goed').style.display='block';
       document.getElementById('t-knoppen').style.display='none';
     }
@@ -303,9 +553,7 @@ function buildBlokkenGrid(){
       if(vol)return;
       if(rGekozen.length>0&&!past){
         const m=document.getElementById('r-melding');
-        m.className='melding info';
-        m.textContent=uitlegNietCombi(b.d);
-        m.style.display='block';
+        m.className='melding info';m.textContent=uitlegNietCombi(b.d);m.style.display='block';
         return;
       }
       addBlok(i);
@@ -339,7 +587,6 @@ function renderRekenen(){
   const omsg=document.getElementById('onmogelijk-msg');
   omsg.style.display='none';
   document.getElementById('r-hint').textContent=rGekozen.length===0?'Tik een breuk aan om te beginnen.':'Tik in de som om een breuk te verwijderen.';
-
   const ruwEl=document.getElementById('r-ruw');
   ruwEl.textContent='';
 
@@ -348,6 +595,8 @@ function renderRekenen(){
     document.getElementById('r-teller').textContent='0';
     document.getElementById('r-noemer').textContent='1';
     document.getElementById('r-pct').textContent='0%';
+    document.getElementById('r-eq-links').className='frac-side leeg';
+    document.getElementById('r-eq-rechts').className='frac-side leeg';
     drawPieMeerkleurig('pie-rekenen',[]);
     return;
   }
@@ -366,8 +615,7 @@ function renderRekenen(){
     if(i>0){const op=document.createElement('span');op.className='som-op';op.textContent='+';row.appendChild(op);}
     const el=document.createElement('div');
     el.className='som-frac';
-    el.style.borderColor=b.kleur;
-    el.style.background=b.kleur+'22';
+    el.style.borderColor=b.kleur;el.style.background=b.kleur+'22';
     el.innerHTML=`<span style="font-size:15px;font-weight:500;line-height:1;color:${b.kleur}">${b.n}</span><div style="width:14px;height:1.5px;background:${b.kleur}"></div><span style="font-size:15px;font-weight:500;line-height:1;color:${b.kleur}">${b.d}</span>`;
     el.onclick=()=>removeBlok(i);
     row.appendChild(el);
@@ -382,13 +630,22 @@ function renderRekenen(){
   document.getElementById('r-teller').textContent=red.n;
   document.getElementById('r-noemer').textContent=red.d;
   document.getElementById('r-pct').textContent=Math.round(red.n/red.d*1000)/10+'%';
+  toonCarousel('r', red.n, red.d);
 
-  if(!onmogelijk && (red.n!==clampN || red.d!==gemD)){
+  if(!onmogelijk&&(red.n!==clampN||red.d!==gemD)){
     ruwEl.textContent='ook: '+clampN+'/'+gemD;
   }
 
   drawPieMeerkleurig('pie-rekenen',onmogelijk?[]:rGekozen);
 }
+
+// Redraw on resize (orientation change)
+window.addEventListener('resize', () => {
+  const active = document.querySelector('.screen.active');
+  if(!active) return;
+  if(active.id === 'screen-tellen') updateTellen();
+  else renderRekenen();
+});
 
 nieuweOpgaveTellen();
 renderRekenen();
