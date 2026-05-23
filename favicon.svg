@@ -1,0 +1,31 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#7F77DD"/>
+  <g transform="translate(256,256)">
+    <path d="M0,0 L0,-184 A184,184 0 0 1 92,-159.45 Z" fill="#E24B4A"/>
+    <path d="M0,0 L92,-159.45 A184,184 0 0 1 159.45,-92 Z" fill="#D85A30"/>
+    <path d="M0,0 L159.45,-92 A184,184 0 0 1 184,0 Z" fill="#EF9F27"/>
+    <path d="M0,0 L184,0 A184,184 0 0 1 159.45,92 Z" fill="#97C459"/>
+    <path d="M0,0 L159.45,92 A184,184 0 0 1 92,159.45 Z" fill="#1D9E75"/>
+    <path d="M0,0 L92,159.45 A184,184 0 0 1 0,184 Z" fill="#378ADD"/>
+    <path d="M0,0 L0,184 A184,184 0 0 1 -92,159.45 Z" fill="#534AB7"/>
+    <path d="M0,0 L-92,159.45 A184,184 0 0 1 -159.45,92 Z" fill="#993556"/>
+    <path d="M0,0 L-159.45,92 A184,184 0 0 1 -184,0 Z" fill="#D4537E"/>
+    <path d="M0,0 L-184,0 A184,184 0 0 1 -159.45,-92 Z" fill="#BA7517"/>
+    <path d="M0,0 L-159.45,-92 A184,184 0 0 1 -92,-159.45 Z" fill="#AFA9EC"/>
+    <path d="M0,0 L-92,-159.45 A184,184 0 0 1 0,-184 Z" fill="#F4C0D1"/>
+    <line x1="0" y1="0" x2="0" y2="-184" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="92" y2="-159.45" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="159.45" y2="-92" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="184" y2="0" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="159.45" y2="92" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="92" y2="159.45" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="0" y2="184" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="-92" y2="159.45" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="-159.45" y2="92" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="-184" y2="0" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="-159.45" y2="-92" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="0" x2="-92" y2="-159.45" stroke="white" stroke-width="3"/>
+    <circle cx="0" cy="0" r="184" fill="none" stroke="white" stroke-width="3"/>
+    <circle cx="0" cy="0" r="24" fill="white" opacity="0.9"/>
+  </g>
+</svg>

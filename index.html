@@ -1,55 +1,94 @@
-
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Breukenspel">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
+<title>Breukenspel</title>
 <style>
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-.app { font-family: var(--font-sans, system-ui, sans-serif); padding: 16px; max-width: 680px; margin: 0 auto; }
-.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: system-ui, sans-serif; background: #f5f4ff; }
+
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px;
+  min-height: 100%;
+}
+
+.tabs { display: flex; gap: 8px; margin-bottom: 14px; }
 .tab { flex:1; padding:11px 8px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; text-align:center; transition:all .15s; }
 .tab.active { background:#7F77DD; border-color:#7F77DD; color:white; }
 .screen { display:none; }
 .screen.active { display:block; }
 
-.opgave-banner { background:#EEEDFE; border-radius:16px; padding:12px 16px; text-align:center; font-size:18px; font-weight:500; color:#3C3489; margin-bottom:14px; }
-.pie-center { display:flex; justify-content:center; margin-bottom:10px; }
-.frac-display { text-align:center; margin-bottom:10px; }
+.opgave-banner { background:#EEEDFE; border-radius:16px; padding:10px 16px; text-align:center; font-size:17px; font-weight:500; color:#3C3489; margin-bottom:12px; }
+.pie-center { display:flex; justify-content:center; margin-bottom:8px; }
+.frac-display { text-align:center; margin-bottom:8px; }
 .frac-big { display:inline-flex; flex-direction:column; align-items:center; gap:2px; }
-.fn { font-size:42px; font-weight:500; line-height:1; color:var(--color-text-primary); }
-.fl { width:50px; height:2.5px; background:var(--color-text-primary); }
-.pct-big { font-size:20px; font-weight:500; color:#7F77DD; margin-top:4px; }
+.fn { font-size:40px; font-weight:500; line-height:1; color:#1a1a1a; }
+.fl { width:50px; height:2.5px; background:#1a1a1a; }
+.pct-big { font-size:19px; font-weight:500; color:#7F77DD; margin-top:4px; }
 
-.goed-banner { background:#7F77DD; border-radius:16px; padding:16px; text-align:center; margin-bottom:10px; }
-.goed-txt { font-size:22px; font-weight:500; color:white; margin-bottom:12px; }
-.next-btn { padding:12px 28px; border-radius:24px; border:none; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; display:inline-block; }
+.goed-banner { background:#7F77DD; border-radius:16px; padding:14px; text-align:center; margin-bottom:10px; }
+.goed-txt { font-size:20px; font-weight:500; color:white; margin-bottom:10px; }
+.next-btn { padding:11px 28px; border-radius:24px; border:none; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; }
 
-.btn-row { display:flex; gap:10px; justify-content:center; margin-top:10px; }
-.pill-btn { padding:12px 24px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; }
+.btn-row { display:flex; gap:10px; justify-content:center; margin-top:8px; }
+.pill-btn { padding:11px 22px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; }
 .pill-btn.primary { border-color:#7F77DD; background:#7F77DD; color:white; }
 
-.blokken-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:12px; }
-.blok-btn { padding:10px 12px; border-radius:20px; border:2px solid #AFA9EC; background:white; font-size:14px; font-weight:500; cursor:pointer; color:#534AB7; transition:all .15s; display:inline-flex; flex-direction:column; align-items:center; gap:1px; min-width:50px; position:relative; }
+.blokken-grid { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin-bottom:10px; }
+.blok-btn { padding:9px 11px; border-radius:20px; border:2px solid #AFA9EC; background:white; font-size:13px; font-weight:500; cursor:pointer; color:#534AB7; transition:all .15s; display:inline-flex; flex-direction:column; align-items:center; gap:1px; min-width:48px; position:relative; }
 .blok-btn.selected { border-color:#7F77DD; background:#7F77DD; color:white; }
 .blok-btn.past-niet { opacity:0.25; cursor:not-allowed; }
-.blok-btn .count-badge { position:absolute; top:-7px; right:-7px; font-size:11px; background:#534AB7; color:white; border-radius:10px; padding:1px 6px; font-weight:500; }
-.bf { font-size:17px; font-weight:500; line-height:1; }
-.bl { width:18px; height:1.5px; background:currentColor; }
-.bd { font-size:17px; font-weight:500; line-height:1; }
+.blok-btn .count-badge { position:absolute; top:-7px; right:-7px; font-size:10px; background:#534AB7; color:white; border-radius:10px; padding:1px 5px; font-weight:500; }
+.bf { font-size:16px; font-weight:500; line-height:1; }
+.bl { width:16px; height:1.5px; background:currentColor; }
+.bd { font-size:16px; font-weight:500; line-height:1; }
 
-.som-row { display:flex; align-items:center; gap:6px; justify-content:center; flex-wrap:wrap; min-height:52px; margin-bottom:10px; }
-.som-frac { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:6px 10px; border:2px solid; cursor:pointer; }
-.som-op { font-size:18px; color:#aaa; }
-.som-eq { font-size:18px; color:#aaa; }
-.som-result { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:6px 10px; border:2px solid #ddd; background:#f5f5f5; }
-.melding { text-align:center; font-size:13px; border-radius:12px; padding:8px 12px; margin-bottom:8px; }
+.som-row { display:flex; align-items:center; gap:5px; justify-content:center; flex-wrap:wrap; min-height:48px; margin-bottom:8px; }
+.som-frac { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:5px 9px; border:2px solid; cursor:pointer; }
+.som-op { font-size:17px; color:#aaa; }
+.som-eq { font-size:17px; color:#aaa; }
+.som-result { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:5px 9px; border:2px solid #ddd; background:#f5f5f5; }
+.melding { text-align:center; font-size:13px; border-radius:12px; padding:7px 12px; margin-bottom:7px; }
 .melding.info { color:#3C3489; background:#EEEDFE; border:1.5px solid #AFA9EC; }
 .melding.fout { color:#A32D2D; background:#FCEBEB; border:1.5px solid #F09595; }
-.hint { text-align:center; font-size:13px; color:var(--color-text-secondary); margin-bottom:8px; }
+.hint { text-align:center; font-size:13px; color:#666; margin-bottom:7px; }
 
-.confetti-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-.confetti-wrap { position:relative; }
+.confetti-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .app { padding: 8px 16px; }
+  .tabs { margin-bottom: 8px; }
+  .tab { padding: 8px; font-size: 14px; }
+  .opgave-banner { padding: 7px 14px; font-size: 15px; margin-bottom: 8px; }
+  .pie-center canvas { width: 140px !important; height: 140px !important; }
+  .fn { font-size: 30px; }
+  .pct-big { font-size: 15px; }
+  .frac-display { margin-bottom: 4px; }
+  .goed-banner { padding: 10px; }
+  .goed-txt { font-size: 17px; margin-bottom: 8px; }
+  .blokken-grid { gap: 5px; margin-bottom: 7px; }
+  .blok-btn { padding: 7px 9px; min-width: 42px; }
+  .bf, .bd { font-size: 14px; }
+  .som-row { min-height: 38px; margin-bottom: 6px; }
+  .hint { margin-bottom: 5px; }
+  .btn-row { margin-top: 6px; }
+  .pill-btn { padding: 9px 18px; font-size: 14px; }
+}
 </style>
+</head>
+<body>
 
-<div class="app confetti-wrap">
-  <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+<canvas class="confetti-canvas" id="confetti-canvas"></canvas>
 
+<div class="app">
   <div class="tabs">
     <div class="tab active" onclick="switchTab('tellen')">🎯 Tellen</div>
     <div class="tab" onclick="switchTab('rekenen')">➕ Rekenen</div>
@@ -57,7 +96,7 @@
 
   <div id="screen-tellen" class="screen active">
     <div class="opgave-banner" id="t-opgave">Laden...</div>
-    <div class="pie-center"><canvas id="pie-tellen" width="230" height="230"></canvas></div>
+    <div class="pie-center"><canvas id="pie-tellen" width="220" height="220"></canvas></div>
     <div class="frac-display">
       <div class="frac-big">
         <span class="fn" id="t-teller">0</span>
@@ -81,7 +120,7 @@
     <div id="r-melding" style="display:none" class="melding"></div>
     <div class="som-row" id="som-row"></div>
     <div id="onmogelijk-msg" style="display:none" class="melding fout"></div>
-    <div class="pie-center"><canvas id="pie-rekenen" width="230" height="230"></canvas></div>
+    <div class="pie-center"><canvas id="pie-rekenen" width="220" height="220"></canvas></div>
     <div class="frac-display">
       <div class="frac-big">
         <span class="fn" id="r-teller">0</span>
@@ -91,7 +130,7 @@
       <div class="pct-big" id="r-pct">0%</div>
     </div>
     <div class="btn-row">
-      <button class="pill-btn" onclick="clearRekenen()"><i class="ti ti-refresh" aria-hidden="true"></i> Wis alles</button>
+      <button class="pill-btn" onclick="clearRekenen()">↺ Wis alles</button>
     </div>
   </div>
 </div>
@@ -104,7 +143,7 @@ const KLEUREN=['#7F77DD','#D85A30','#BA7517','#D4537E','#1D9E75','#378ADD','#993
 
 let tNoemer=6,tTeller=0,tDoel=0,tGoed=false,tVorigeNoemer=-1;
 let rGekozen=[];
-let confParticles=[],confActive=false,confRaf=null;
+let confParticles=[],confRaf=null;
 
 function gcd(a,b){return b===0?a:gcd(b,a%b);}
 function lcm(a,b){return a*b/gcd(a,b);}
@@ -124,6 +163,12 @@ function switchTab(t){
   document.getElementById('screen-tellen').classList.toggle('active',t==='tellen');
   document.getElementById('screen-rekenen').classList.toggle('active',t==='rekenen');
   if(t==='rekenen')renderRekenen();
+}
+
+function getPieSize(id){
+  const canvas=document.getElementById(id);
+  const rect=canvas.getBoundingClientRect();
+  return{w:canvas.width,h:canvas.height,dispW:rect.width||canvas.width,dispH:rect.height||canvas.height};
 }
 
 function drawPieTellen(id,filled,total,clickCb){
@@ -168,7 +213,7 @@ function drawPieMeerkleurig(id,breuken){
     const sweep=(b.n/b.d)*schaal*2*Math.PI;
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,hoek,hoek+sweep);ctx.closePath();
     ctx.fillStyle=b.kleur;ctx.fill();
-    segmenten.push({hoek,sweep});
+    segmenten.push({hoek});
     hoek+=sweep;
   });
   segmenten.forEach(s=>{
@@ -181,25 +226,22 @@ function drawPieMeerkleurig(id,breuken){
 
 function startConfetti(){
   const canvas=document.getElementById('confetti-canvas');
-  const wrap=canvas.parentElement;
-  canvas.width=wrap.offsetWidth;
-  canvas.height=Math.max(wrap.offsetHeight,400);
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
   confParticles=[];
-  const colors=['#7F77DD','#D85A30','#1D9E75','#FAC775','#D4537E','#378ADD','#AFA9EC'];
-  for(let i=0;i<80;i++){
+  const colors=['#7F77DD','#D85A30','#1D9E75','#FAC775','#D4537E','#378ADD','#AFA9EC','#F4C0D1'];
+  for(let i=0;i<90;i++){
     confParticles.push({
-      x:Math.random()*canvas.width,y:-10-Math.random()*80,
+      x:Math.random()*canvas.width,y:-10-Math.random()*60,
       w:7+Math.random()*6,h:4+Math.random()*4,
       color:colors[Math.floor(Math.random()*colors.length)],
       rot:Math.random()*360,rotV:(Math.random()-0.5)*8,
-      vy:3+Math.random()*4,vx:(Math.random()-0.5)*2,
-      alpha:1
+      vy:3+Math.random()*4,vx:(Math.random()-0.5)*2,alpha:1
     });
   }
-  confActive=true;
   if(confRaf)cancelAnimationFrame(confRaf);
   animateConfetti();
-  setTimeout(()=>{confActive=false;},2200);
+  setTimeout(()=>{confParticles=[];},2400);
 }
 
 function animateConfetti(){
@@ -209,15 +251,14 @@ function animateConfetti(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   confParticles.forEach(p=>{
     p.y+=p.vy;p.x+=p.vx;p.rot+=p.rotV;
-    if(p.y>canvas.height*0.7)p.alpha=Math.max(0,p.alpha-0.04);
+    if(p.y>canvas.height*0.6)p.alpha=Math.max(0,p.alpha-0.04);
     ctx.save();ctx.globalAlpha=p.alpha;
     ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
-    ctx.fillStyle=p.color;
-    ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
     ctx.restore();
   });
   confParticles=confParticles.filter(p=>p.alpha>0);
-  if(confParticles.length>0||confActive)confRaf=requestAnimationFrame(animateConfetti);
+  if(confParticles.length>0)confRaf=requestAnimationFrame(animateConfetti);
   else ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 
@@ -328,13 +369,13 @@ function renderRekenen(){
     el.className='som-frac';
     el.style.borderColor=b.kleur;
     el.style.background=b.kleur+'22';
-    el.innerHTML=`<span style="font-size:16px;font-weight:500;line-height:1;color:${b.kleur}">${b.n}</span><div style="width:16px;height:1.5px;background:${b.kleur}"></div><span style="font-size:16px;font-weight:500;line-height:1;color:${b.kleur}">${b.d}</span>`;
+    el.innerHTML=`<span style="font-size:15px;font-weight:500;line-height:1;color:${b.kleur}">${b.n}</span><div style="width:15px;height:1.5px;background:${b.kleur}"></div><span style="font-size:15px;font-weight:500;line-height:1;color:${b.kleur}">${b.d}</span>`;
     el.onclick=()=>removeBlok(i);
     row.appendChild(el);
   });
   const eq=document.createElement('span');eq.className='som-eq';eq.textContent='=';row.appendChild(eq);
   const res=document.createElement('div');res.className='som-result';
-  res.innerHTML=`<span style="font-size:16px;font-weight:500;line-height:1;color:#333">${red.n}</span><div style="width:16px;height:1.5px;background:#333"></div><span style="font-size:16px;font-weight:500;line-height:1;color:#333">${red.d}</span>`;
+  res.innerHTML=`<span style="font-size:15px;font-weight:500;line-height:1;color:#333">${red.n}</span><div style="width:15px;height:1.5px;background:#333"></div><span style="font-size:15px;font-weight:500;line-height:1;color:#333">${red.d}</span>`;
   row.appendChild(res);
 
   if(onmogelijk){omsg.style.display='block';omsg.textContent='Meer dan een hele taart! Tik op een breuk in de som om hem te verwijderen.';}
@@ -348,3 +389,5 @@ function renderRekenen(){
 nieuweOpgaveTellen();
 renderRekenen();
 </script>
+</body>
+</html>
