@@ -1,0 +1,350 @@
+
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+.app { font-family: var(--font-sans, system-ui, sans-serif); padding: 16px; max-width: 680px; margin: 0 auto; }
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.tab { flex:1; padding:11px 8px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; text-align:center; transition:all .15s; }
+.tab.active { background:#7F77DD; border-color:#7F77DD; color:white; }
+.screen { display:none; }
+.screen.active { display:block; }
+
+.opgave-banner { background:#EEEDFE; border-radius:16px; padding:12px 16px; text-align:center; font-size:18px; font-weight:500; color:#3C3489; margin-bottom:14px; }
+.pie-center { display:flex; justify-content:center; margin-bottom:10px; }
+.frac-display { text-align:center; margin-bottom:10px; }
+.frac-big { display:inline-flex; flex-direction:column; align-items:center; gap:2px; }
+.fn { font-size:42px; font-weight:500; line-height:1; color:var(--color-text-primary); }
+.fl { width:50px; height:2.5px; background:var(--color-text-primary); }
+.pct-big { font-size:20px; font-weight:500; color:#7F77DD; margin-top:4px; }
+
+.goed-banner { background:#7F77DD; border-radius:16px; padding:16px; text-align:center; margin-bottom:10px; }
+.goed-txt { font-size:22px; font-weight:500; color:white; margin-bottom:12px; }
+.next-btn { padding:12px 28px; border-radius:24px; border:none; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; display:inline-block; }
+
+.btn-row { display:flex; gap:10px; justify-content:center; margin-top:10px; }
+.pill-btn { padding:12px 24px; border-radius:24px; border:2px solid #AFA9EC; background:white; font-size:15px; font-weight:500; cursor:pointer; color:#534AB7; }
+.pill-btn.primary { border-color:#7F77DD; background:#7F77DD; color:white; }
+
+.blokken-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:12px; }
+.blok-btn { padding:10px 12px; border-radius:20px; border:2px solid #AFA9EC; background:white; font-size:14px; font-weight:500; cursor:pointer; color:#534AB7; transition:all .15s; display:inline-flex; flex-direction:column; align-items:center; gap:1px; min-width:50px; position:relative; }
+.blok-btn.selected { border-color:#7F77DD; background:#7F77DD; color:white; }
+.blok-btn.past-niet { opacity:0.25; cursor:not-allowed; }
+.blok-btn .count-badge { position:absolute; top:-7px; right:-7px; font-size:11px; background:#534AB7; color:white; border-radius:10px; padding:1px 6px; font-weight:500; }
+.bf { font-size:17px; font-weight:500; line-height:1; }
+.bl { width:18px; height:1.5px; background:currentColor; }
+.bd { font-size:17px; font-weight:500; line-height:1; }
+
+.som-row { display:flex; align-items:center; gap:6px; justify-content:center; flex-wrap:wrap; min-height:52px; margin-bottom:10px; }
+.som-frac { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:6px 10px; border:2px solid; cursor:pointer; }
+.som-op { font-size:18px; color:#aaa; }
+.som-eq { font-size:18px; color:#aaa; }
+.som-result { display:inline-flex; flex-direction:column; align-items:center; gap:1px; border-radius:10px; padding:6px 10px; border:2px solid #ddd; background:#f5f5f5; }
+.melding { text-align:center; font-size:13px; border-radius:12px; padding:8px 12px; margin-bottom:8px; }
+.melding.info { color:#3C3489; background:#EEEDFE; border:1.5px solid #AFA9EC; }
+.melding.fout { color:#A32D2D; background:#FCEBEB; border:1.5px solid #F09595; }
+.hint { text-align:center; font-size:13px; color:var(--color-text-secondary); margin-bottom:8px; }
+
+.confetti-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+.confetti-wrap { position:relative; }
+</style>
+
+<div class="app confetti-wrap">
+  <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('tellen')">🎯 Tellen</div>
+    <div class="tab" onclick="switchTab('rekenen')">➕ Rekenen</div>
+  </div>
+
+  <div id="screen-tellen" class="screen active">
+    <div class="opgave-banner" id="t-opgave">Laden...</div>
+    <div class="pie-center"><canvas id="pie-tellen" width="230" height="230"></canvas></div>
+    <div class="frac-display">
+      <div class="frac-big">
+        <span class="fn" id="t-teller">0</span>
+        <div class="fl"></div>
+        <span class="fn" id="t-noemer">6</span>
+      </div>
+      <div class="pct-big" id="t-pct">0%</div>
+    </div>
+    <div id="t-goed" style="display:none" class="goed-banner">
+      <div class="goed-txt">🎉 Goed gedaan!</div>
+      <button class="next-btn" onclick="nieuweOpgaveTellen()">Volgende opgave →</button>
+    </div>
+    <div id="t-knoppen" class="btn-row">
+      <button class="pill-btn primary" onclick="nieuweOpgaveTellen()">Nieuwe opgave</button>
+    </div>
+  </div>
+
+  <div id="screen-rekenen" class="screen">
+    <div class="hint" id="r-hint">Tik een breuk aan om te beginnen.</div>
+    <div class="blokken-grid" id="blokken-grid"></div>
+    <div id="r-melding" style="display:none" class="melding"></div>
+    <div class="som-row" id="som-row"></div>
+    <div id="onmogelijk-msg" style="display:none" class="melding fout"></div>
+    <div class="pie-center"><canvas id="pie-rekenen" width="230" height="230"></canvas></div>
+    <div class="frac-display">
+      <div class="frac-big">
+        <span class="fn" id="r-teller">0</span>
+        <div class="fl"></div>
+        <span class="fn" id="r-noemer">1</span>
+      </div>
+      <div class="pct-big" id="r-pct">0%</div>
+    </div>
+    <div class="btn-row">
+      <button class="pill-btn" onclick="clearRekenen()"><i class="ti ti-refresh" aria-hidden="true"></i> Wis alles</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALLE_BREUKEN=[{n:1,d:1},{n:1,d:2},{n:1,d:3},{n:1,d:4},{n:1,d:5},{n:1,d:6},{n:1,d:7},{n:1,d:8},{n:1,d:9},{n:1,d:10},{n:1,d:11},{n:1,d:12}];
+const MAX_PER_BREUK={1:1,2:2,3:3,4:4,5:5,6:6,7:1,8:8,9:3,10:2,11:1,12:12};
+const TELLEN_NOEMERS=[2,3,4,6,12];
+const KLEUREN=['#7F77DD','#D85A30','#BA7517','#D4537E','#1D9E75','#378ADD','#993C1D','#0F6E56'];
+
+let tNoemer=6,tTeller=0,tDoel=0,tGoed=false,tVorigeNoemer=-1;
+let rGekozen=[];
+let confParticles=[],confActive=false,confRaf=null;
+
+function gcd(a,b){return b===0?a:gcd(b,a%b);}
+function lcm(a,b){return a*b/gcd(a,b);}
+function reduceer(n,d){const g=gcd(Math.abs(n),Math.abs(d));return{n:n/g,d:d/g};}
+function huidigeLcm(){if(rGekozen.length===0)return 1;let l=rGekozen[0].d;rGekozen.forEach(b=>{l=lcm(l,b.d);});return l;}
+
+function uitlegNietCombi(d){
+  if(d===7)return '1/7 past niet bij andere breuken';
+  if(d===11)return '1/11 past niet bij andere breuken';
+  if(d===5)return '1/5 past alleen bij 1/5 en 1/10';
+  if(d===9)return '1/9 past alleen bij 1/3 en 1/9';
+  return '1/'+d+' combineert niet met de huidige keuze';
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='tellen')||(i===1&&t==='rekenen')));
+  document.getElementById('screen-tellen').classList.toggle('active',t==='tellen');
+  document.getElementById('screen-rekenen').classList.toggle('active',t==='rekenen');
+  if(t==='rekenen')renderRekenen();
+}
+
+function drawPieTellen(id,filled,total,clickCb){
+  const canvas=document.getElementById(id);
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,r=W/2-12;
+  ctx.clearRect(0,0,W,H);
+  if(total===0)return;
+  const slice=(2*Math.PI)/total,start=-Math.PI/2;
+  for(let i=0;i<total;i++){
+    const a1=start+i*slice,a2=a1+slice;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a1,a2);ctx.closePath();
+    ctx.fillStyle=i<filled?'#7F77DD':'#e8e8e8';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.stroke();
+  }
+  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;ctx.stroke();
+  canvas.onclick=null;
+  if(clickCb)canvas.onclick=(e)=>{
+    const rect=canvas.getBoundingClientRect();
+    const sx=W/rect.width,sy=H/rect.height;
+    const x=(e.clientX-rect.left)*sx-cx,y=(e.clientY-rect.top)*sy-cy;
+    if(Math.sqrt(x*x+y*y)>r)return;
+    let ang=Math.atan2(y,x)-start;if(ang<0)ang+=2*Math.PI;
+    clickCb(Math.floor(ang/slice));
+  };
+}
+
+function drawPieMeerkleurig(id,breuken){
+  const canvas=document.getElementById(id);
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,r=W/2-12;
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fillStyle='#e8e8e8';ctx.fill();
+  if(!breuken||breuken.length===0){ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;ctx.stroke();return;}
+  const totaal=breuken.reduce((s,b)=>s+b.n/b.d,0);
+  const schaal=Math.min(1,1/totaal);
+  let hoek=-Math.PI/2;
+  const segmenten=[];
+  breuken.forEach(b=>{
+    const sweep=(b.n/b.d)*schaal*2*Math.PI;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,hoek,hoek+sweep);ctx.closePath();
+    ctx.fillStyle=b.kleur;ctx.fill();
+    segmenten.push({hoek,sweep});
+    hoek+=sweep;
+  });
+  segmenten.forEach(s=>{
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+r*Math.cos(s.hoek),cy+r*Math.sin(s.hoek));
+    ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;ctx.stroke();
+}
+
+function startConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  const wrap=canvas.parentElement;
+  canvas.width=wrap.offsetWidth;
+  canvas.height=Math.max(wrap.offsetHeight,400);
+  confParticles=[];
+  const colors=['#7F77DD','#D85A30','#1D9E75','#FAC775','#D4537E','#378ADD','#AFA9EC'];
+  for(let i=0;i<80;i++){
+    confParticles.push({
+      x:Math.random()*canvas.width,y:-10-Math.random()*80,
+      w:7+Math.random()*6,h:4+Math.random()*4,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      rot:Math.random()*360,rotV:(Math.random()-0.5)*8,
+      vy:3+Math.random()*4,vx:(Math.random()-0.5)*2,
+      alpha:1
+    });
+  }
+  confActive=true;
+  if(confRaf)cancelAnimationFrame(confRaf);
+  animateConfetti();
+  setTimeout(()=>{confActive=false;},2200);
+}
+
+function animateConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  confParticles.forEach(p=>{
+    p.y+=p.vy;p.x+=p.vx;p.rot+=p.rotV;
+    if(p.y>canvas.height*0.7)p.alpha=Math.max(0,p.alpha-0.04);
+    ctx.save();ctx.globalAlpha=p.alpha;
+    ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle=p.color;
+    ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore();
+  });
+  confParticles=confParticles.filter(p=>p.alpha>0);
+  if(confParticles.length>0||confActive)confRaf=requestAnimationFrame(animateConfetti);
+  else ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function nieuweOpgaveTellen(){
+  let pool=TELLEN_NOEMERS.filter(n=>n!==tVorigeNoemer);
+  tNoemer=pool[Math.floor(Math.random()*pool.length)];
+  tVorigeNoemer=tNoemer;
+  tTeller=0;tGoed=false;
+  tDoel=1+Math.floor(Math.random()*(tNoemer-1));
+  document.getElementById('t-opgave').textContent='Maak '+tDoel+'/'+tNoemer+' — tik op de taart';
+  document.getElementById('t-goed').style.display='none';
+  document.getElementById('t-knoppen').style.display='flex';
+  updateTellen();
+}
+
+function updateTellen(){
+  document.getElementById('t-teller').textContent=tTeller;
+  document.getElementById('t-noemer').textContent=tNoemer;
+  document.getElementById('t-pct').textContent=Math.round(tTeller/tNoemer*1000)/10+'%';
+  drawPieTellen('pie-tellen',tTeller,tNoemer,tGoed?null:(seg)=>{
+    tTeller=(seg<tTeller)?seg:seg+1;
+    tTeller=Math.max(0,Math.min(tNoemer,tTeller));
+    if(tTeller===tDoel&&!tGoed){
+      tGoed=true;
+      startConfetti();
+      document.getElementById('t-goed').style.display='block';
+      document.getElementById('t-knoppen').style.display='none';
+    }
+    updateTellen();
+  });
+}
+
+function buildBlokkenGrid(){
+  const grid=document.getElementById('blokken-grid');
+  grid.innerHTML='';
+  const hLcm=huidigeLcm();
+  ALLE_BREUKEN.forEach((b,i)=>{
+    const count=rGekozen.filter(g=>g.bIdx===i).length;
+    const max=MAX_PER_BREUK[b.d]||1;
+    const vol=count>=max;
+    const past=b.d===1||lcm(hLcm,b.d)<=12;
+    const uitgeschakeld=vol||(rGekozen.length>0&&!past);
+    const btn=document.createElement('button');
+    btn.className='blok-btn'+(count>0?' selected':'')+(uitgeschakeld?' past-niet':'');
+    btn.innerHTML=`<span class="bf">${b.n}</span><div class="bl"></div><span class="bd">${b.d}</span>${count>0?'<span class="count-badge">'+count+'</span>':''}`;
+    btn.onclick=()=>{
+      if(vol)return;
+      if(rGekozen.length>0&&!past){
+        const m=document.getElementById('r-melding');
+        m.className='melding info';
+        m.textContent=uitlegNietCombi(b.d);
+        m.style.display='block';
+        return;
+      }
+      addBlok(i);
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function addBlok(i){
+  const b=ALLE_BREUKEN[i];
+  rGekozen.push({n:b.n,d:b.d,bIdx:i,kleur:KLEUREN[rGekozen.length%KLEUREN.length]});
+  document.getElementById('r-melding').style.display='none';
+  renderRekenen();
+}
+
+function removeBlok(idx){
+  rGekozen.splice(idx,1);
+  rGekozen.forEach((b,j)=>b.kleur=KLEUREN[j%KLEUREN.length]);
+  document.getElementById('r-melding').style.display='none';
+  renderRekenen();
+}
+
+function clearRekenen(){
+  rGekozen=[];
+  document.getElementById('r-melding').style.display='none';
+  renderRekenen();
+}
+
+function renderRekenen(){
+  buildBlokkenGrid();
+  const omsg=document.getElementById('onmogelijk-msg');
+  omsg.style.display='none';
+  document.getElementById('r-hint').textContent=rGekozen.length===0?'Tik een breuk aan om te beginnen.':'Tik in de som om een breuk te verwijderen.';
+
+  if(rGekozen.length===0){
+    document.getElementById('som-row').innerHTML='<span style="color:#aaa;font-size:14px;">Nog niets gekozen</span>';
+    document.getElementById('r-teller').textContent='0';
+    document.getElementById('r-noemer').textContent='1';
+    document.getElementById('r-pct').textContent='0%';
+    drawPieMeerkleurig('pie-rekenen',[]);
+    return;
+  }
+
+  let gemD=rGekozen[0].d;
+  rGekozen.forEach(b=>{gemD=lcm(gemD,b.d);});
+  let somN=0;
+  rGekozen.forEach(b=>{somN+=b.n*(gemD/b.d);});
+  const onmogelijk=somN>gemD;
+  const red=reduceer(Math.min(somN,gemD),gemD);
+
+  const row=document.getElementById('som-row');
+  row.innerHTML='';
+  rGekozen.forEach((b,i)=>{
+    if(i>0){const op=document.createElement('span');op.className='som-op';op.textContent='+';row.appendChild(op);}
+    const el=document.createElement('div');
+    el.className='som-frac';
+    el.style.borderColor=b.kleur;
+    el.style.background=b.kleur+'22';
+    el.innerHTML=`<span style="font-size:16px;font-weight:500;line-height:1;color:${b.kleur}">${b.n}</span><div style="width:16px;height:1.5px;background:${b.kleur}"></div><span style="font-size:16px;font-weight:500;line-height:1;color:${b.kleur}">${b.d}</span>`;
+    el.onclick=()=>removeBlok(i);
+    row.appendChild(el);
+  });
+  const eq=document.createElement('span');eq.className='som-eq';eq.textContent='=';row.appendChild(eq);
+  const res=document.createElement('div');res.className='som-result';
+  res.innerHTML=`<span style="font-size:16px;font-weight:500;line-height:1;color:#333">${red.n}</span><div style="width:16px;height:1.5px;background:#333"></div><span style="font-size:16px;font-weight:500;line-height:1;color:#333">${red.d}</span>`;
+  row.appendChild(res);
+
+  if(onmogelijk){omsg.style.display='block';omsg.textContent='Meer dan een hele taart! Tik op een breuk in de som om hem te verwijderen.';}
+
+  document.getElementById('r-teller').textContent=red.n;
+  document.getElementById('r-noemer').textContent=red.d;
+  document.getElementById('r-pct').textContent=Math.round(red.n/red.d*1000)/10+'%';
+  drawPieMeerkleurig('pie-rekenen',onmogelijk?[]:rGekozen);
+}
+
+nieuweOpgaveTellen();
+renderRekenen();
+</script>
